@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Genre;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
@@ -16,36 +18,54 @@ class BookController extends Controller
         'Nick Joaquin',
     ];
 
-    private array $genres = ['Mystery', 'Drama', 'Classic', 'Historical', 'Literary'];
-
     public function index(Request $request)
     {
-        $books = Book::all();
+        DB::enableQueryLog();
 
         $genre = $request->query('genre', 'all');
         $author = $request->query('author', 'all');
 
-        return view('books.index', compact('books', 'genre', 'author'));
+        $query = Book::with('genre');
+
+        if ($genre !== 'all') {
+            $query->where('genre_id', $genre);
+        }
+
+        if ($author !== 'all') {
+            $query->where('author', $author);
+        }
+
+        $books = $query->get();
+        $genres = Genre::all();
+
+        return view('books.index', compact(
+            'books',
+            'genres',
+            'genre',
+            'author'
+        ));
     }
 
     public function create()
     {
+        $genres = Genre::all();
+
         return view('books.create', [
             'authors' => $this->authors,
-            'genres' => $this->genres,
+            'genres' => $genres,
         ]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|max:255',
             'author' => 'required|in:' . implode(',', $this->authors),
-            'genre' => 'required|in:' . implode(',', $this->genres),
+            'genre_id' => 'required|exists:genres,id',
             'year' => 'required|numeric|min:1500|max:2026'
         ]);
 
-        Book::create($data);
+        Book::create($validated);
 
         return redirect()->route('books.index')
             ->with('success', 'Book added successfully.');
