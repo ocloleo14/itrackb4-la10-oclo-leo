@@ -29,7 +29,7 @@
 
             <p>
                 <strong>Genre:</strong>
-                {{ $item['genre'] }}
+               {{ $item->genre->name }}
             </p>
 
             <p>

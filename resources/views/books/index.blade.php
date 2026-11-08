@@ -92,30 +92,29 @@
                         <th>Genre</th>
                         <th>Year</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-
                     @forelse ($books as $item)
-
                         <tr>
                             <td>{{ $loop->iteration }}</td>
 
                             <td>
-                                <a href="{{ route('books.show', $item['id']) }}">
-                                    {{ $item['title'] }}
+                                <a href="{{ route('books.show', $item) }}">
+                                    {{ $item->title }}
                                 </a>
                             </td>
 
-                            <td>{{ $item['author'] }}</td>
+                            <td>{{ $item->author }}</td>
 
                             <td>{{ $item->genre->name }}</td>
 
-                            <td>{{ $item['year'] }}</td>
+                            <td>{{ $item->year }}</td>
 
                             <td>
-                                @if ($item['year'] < 2000)
+                                @if ($item->year < 2000)
                                     <span class="badge bg-secondary">
                                         Classic
                                     </span>
@@ -125,18 +124,33 @@
                                     </span>
                                 @endif
                             </td>
+
+                            <td>
+                                <a href="{{ route('books.edit', $item) }}" class="btn btn-primary btn-sm">
+                                    Edit
+                                </a>
+
+                                <form method="POST" action="{{ route('books.destroy', $item) }}" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this book?')"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
-
                     @empty
-
                         <tr>
-                            <td colspan="6" class="text-center">
+                            <td colspan="7" class="text-center">
                                 No books are available in the collection right now.
                             </td>
                         </tr>
-
                     @endforelse
-
                 </tbody>
             </table>
 

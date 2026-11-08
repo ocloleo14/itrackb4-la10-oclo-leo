@@ -10,5 +10,4 @@ Route::get('/', function () {
 Route::get('/books/featured', [BookController::class, 'featured'])
     ->name('books.featured');
 
-Route::resource('books', BookController::class)
-    ->only(['index', 'create', 'store', 'show']);
+Route::resource('books', BookController::class);

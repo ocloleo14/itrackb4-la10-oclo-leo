@@ -1,65 +1,43 @@
-# ITRACKB4 - Laboratory Activity 3
+# ITRACKB4 - Laboratory Activity 11
 
 ## Book Collection
 
-This project is a simple Laravel application about books.
-It has a book list, detail pages, a featured book, a filter
-for book genres, and a form for adding new books.
+This project is a simple Laravel application about books. It allows users to view, add, edit, update, and delete books. It also includes book details, a featured book, and filters for book genres and authors.
+
+## Features
+
+- View all books.
+- View individual book details.
+- Add a new book.
+- Edit and update existing books.
+- Delete books with a confirmation message.
+- Filter books by genre and author.
+- View a featured book.
 
 ## Routes
 
-- `/books` - shows all books.
-- `/books/featured` - shows the featured book.
-- `/books/{id}` - shows the details of a book.
-- `/books/filter/{value}` - filters books by genre.
-- `/books/filter` - shows all books when there is no filter.
-- `/books/create` - shows the form for adding a new book.
-- `POST /books` - validates and saves the new book.
+- `GET /books` - displays all books.
+- `GET /books/create` - displays the form for adding a book.
+- `POST /books` - validates and saves a new book.
+- `GET /books/{book}` - displays the details of a book.
+- `GET /books/{book}/edit` - displays the edit form.
+- `PUT /books/{book}` - validates and updates a book.
+- `DELETE /books/{book}` - deletes a book.
+- `/books/featured` - displays the featured book.
 
 ## Questions
 
-### 1. Why must `/books/featured` be placed before `/books/{id}`?
+### 1. Route Model Binding
 
-The featured route should be placed first because Laravel checks routes
-from top to bottom. If the `{id}` route comes first, Laravel may treat
-"featured" as an ID. Placing the featured route first makes sure that
-the correct page is displayed.
+Route Model Binding needs the route parameter name to match the model variable name and the controller method to type-hint the corresponding model. If only one of these is correct, Laravel cannot properly perform implicit model binding, and the expected Book model may not be resolved.
 
-### 2. What happens when a nonexistent ID is requested?
+### 2. Why does clicking Delete as a link open the detail page instead of deleting the book?
 
-The controller checks if the ID exists in the book data. If the ID does
-not exist, `abort(404)` is used. This displays a 404 Not Found page.
+An ordinary link sends a GET request, which matches the route for showing a book's details. The destroy route requires a DELETE request, so a form with `@csrf` and `@method('DELETE')` is needed to delete the record.
 
-### 3. Why are named routes useful? What can break if we do not use them?
+### 3. What happens if the second argument of `old()` is omitted, or if only the second argument is used?
 
-Named routes make links easier to manage because we can use the route
-name instead of typing the URL directly. If a URL changes later,
-hard-coded links may stop working. Named routes make the application
-easier to maintain.
-
-## Add Book Form (JSON Storage)
-
-Books are now saved in `storage/app/private/books.json`. The file is created
-automatically with the starting books the first time the app runs.
-
-### 1. What is the difference between POST and GET, and what happens when you refresh after a POST?
-
-GET is used to view a page, while POST is used to send form data. The book form
-uses POST because it sends a new book to the controller. After saving, the
-controller redirects to the book list, so refreshing the page does not submit
-the form again.
-
-### 2. What happens when validation fails, and why does the save code not run?
-
-Laravel sends the user back to the form and shows the errors. The entered values
-can be shown again using `old()`. The save code does not run because validation
-did not pass, so an invalid book is not written to the JSON file.
-
-### 3. Why does the success message appear once even though the layout is shown on every page?
-
-The message is stored as a session flash message after a book is saved. The
-layout checks the session and shows it when it exists. After one request, the
-flash message is removed, so it only appears once.
+The second argument of `old()` provides the existing book value when there is no previously submitted input. If it is omitted, the edit form may appear blank when first opened. If only the second argument is used without `old()`, previously entered values will not be restored after validation fails.
 
 ## How to Run
 
@@ -67,7 +45,6 @@ flash message is removed, so it only appears once.
 2. Run `php artisan serve`.
 3. Open the local Laravel URL in a browser.
 4. Visit `/books` to view the book collection.
-5. Click "Add Book" to add a new book.
 
 ## Author
 
